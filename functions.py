@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import scipy.stats as stats
 
 # to plot scatterplot
 def plot_scatterplot(dataset, title=str, title_fontsize=int, ax_fontsize=int,
@@ -47,3 +48,11 @@ def plot_boxplot(dataset, title=str, title_fontsize=int, ax_fontsize=int,
 
     plt.tight_layout()
     plt.show()
+
+# to calculate skewness
+def calculate_skewness(dataset):
+    skewness = []
+    
+    for column in dataset.columns:
+        skewness.append(round(stats.skew(dataset[column]), 3))
+    return skewness
