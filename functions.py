@@ -2,11 +2,14 @@ import pandas as pd
 import numpy as np
     ## visualisation
 import matplotlib.pyplot as plt
+## ML
+from sklearn.model_selection import train_test_split
+    ## knn
+from sklearn.neighbors import KNeighborsRegressor
     ## linear regression
 from sklearn.linear_model import LinearRegression
     ## polynomial
 from sklearn.preprocessing import PolynomialFeatures
-# from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import Ridge, RidgeCV
     ## decision tree
@@ -113,23 +116,76 @@ def calculate_metrics(X_train, X_test, y_train, y_test, y_train_pred, y_test_pre
     
     return model_metrics
 
-# to run polynomial regression model and to calculate metrics
-def poly_reg(degree, X_train, y_train, X_test, y_test, scaler_used):
+# to run KNN
+def run_knn(feature_matrix, y, n_neighbors, scaler_used):
     """
+    Runs KNN model
     Computes the statistics: MAE, MSE, R^2, adjusted R^2 
     on the training and test sets.
 
     Args:
-    X_train: training set features
-    X_test: test set features
-    y_train: training set target variable
-    y_test: test set target variable
+    feature_matrix: training set features
+    y: target variable
+    n_neighbors: number of neighbors
     scaler_used: scaling approach used before (string)
 
     Returns:
     Dataframe with MAE, MSE, R^2, adjusted R^2 on the training and test sets.
     """
+    
+    X_train, X_test, y_train, y_test = train_test_split(feature_matrix, y, test_size=0.2, random_state=88)
+    
+    knn = KNeighborsRegressor(n_neighbors=n_neighbors)
+    knn.fit(X_train, y_train)
+    
+    y_train_pred = knn.predict(X_train)
+    y_test_pred = knn.predict(X_test)
+    
+    return calculate_metrics(X_train, X_test, y_train, y_test, y_train_pred, y_test_pred, "KNN_", scaler_used)
 
+# to run linear regression
+def run_linreg(feature_matrix, y, scaler_used):
+    """
+    Runs Linear Regression model
+    Computes the statistics: MAE, MSE, R^2, adjusted R^2 
+    on the training and test sets.
+
+    Args:
+    feature_matrix: training set features
+    y: target variable
+    scaler_used: scaling approach used before (string)
+
+    Returns:
+    Dataframe with MAE, MSE, R^2, adjusted R^2 on the training and test sets.
+    """
+    X_train, X_test, y_train, y_test = train_test_split(feature_matrix, y, test_size=0.2, random_state=99)
+    
+    reg = LinearRegression()
+    reg.fit(X_train, y_train)
+    
+    y_train_pred = reg.predict(X_train)
+    y_test_pred = reg.predict(X_test)
+    
+    return calculate_metrics(X_train, X_test, y_train, y_test, y_train_pred, y_test_pred, "LinReg_", scaler_used)
+
+# to run polynomial regression model and to calculate metrics
+def poly_reg(degree, feature_matrix, y, scaler_used):
+    """
+    Computes the statistics: MAE, MSE, R^2, adjusted R^2 
+    on the training and test sets.
+
+    Args:
+    degree: the degree of polynomial
+    feature_matrix: training set features
+    y: target variable
+    scaler_used: scaling approach used before (string)
+
+    Returns:
+    Dataframe with MAE, MSE, R^2, adjusted R^2 on the training and test sets.
+    """
+    
+    X_train, X_test, y_train, y_test = train_test_split(feature_matrix, y, test_size=0.2, random_state=99)
+    
     poly = PolynomialFeatures(degree=degree)
     X_train_poly = poly.fit_transform(X_train)
     X_test_poly = poly.transform(X_test)
