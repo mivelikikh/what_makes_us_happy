@@ -1,7 +1,9 @@
 import pandas as pd
 import numpy as np
-    ## visualisation
+
+## visualisation
 import matplotlib.pyplot as plt
+
 ## ML
 from sklearn.model_selection import train_test_split
     ## knn
@@ -196,26 +198,7 @@ def poly_reg(degree, feature_matrix, y, scaler_used):
     y_train_pred = lin_reg.predict(X_train_poly)
     y_test_pred = lin_reg.predict(X_test_poly)
     
-    # metrics: train set
-    mae_train = round(mean_absolute_error(y_train, y_train_pred), 4)
-    mse_train = round(mean_squared_error(y_train, y_train_pred), 4)
-    r2_train = round(r2_score(y_train, y_train_pred), 4)
-    adj_r2_train = round(1 - (1 - r2_train) * ((X_train_poly.shape[0] - 1) / (X_train_poly.shape[0] - X_train_poly.shape[1] - 1)), 4)
-
-    # metrics: test set
-    mae_test = round(mean_absolute_error(y_test, y_test_pred), 4)
-    mse_test = round(mean_squared_error(y_test, y_test_pred), 4)
-    r2_test = round(r2_score(y_test, y_test_pred), 4)
-    adj_r2_test = round(1 - (1 - r2_test) * ((X_test_poly.shape[0] - 1) / (X_test_poly.shape[0] - X_test_poly.shape[1] - 1)), 4)
-
-    # metrics dataframe
-    poly_metrics = pd.DataFrame({'train': [mae_train, mse_train, r2_train, adj_r2_train],
-                                 'test': [mae_test, mse_test, r2_test, adj_r2_test]},
-                                 index=['MAE', 'MSE', 'R^2', 'adj. R^2'])
-    
-    poly_metrics.columns.name = scaler_used
-    
-    return poly_metrics
+    return calculate_metrics(X_train, X_test, y_train, y_test, y_train_pred, y_test_pred, "Poly_", scaler_used)
 
 # to run poly_ref + ridge + cv and to compute metrics
 def ridge_regression(degree, X_train, y_train, X_test, y_test, scaler_used, cross_validation=False):
