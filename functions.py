@@ -5,7 +5,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 ## ML
+from sklearn.preprocessing import PolynomialFeatures, MinMaxScaler, StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import KFold, GridSearchCV
 from sklearn.model_selection import train_test_split
+    ## ElasticNet, Ridge, Lasso
+from sklearn.linear_model import ElasticNet, Ridge, Lasso
     ## knn
 from sklearn.neighbors import KNeighborsRegressor
     ## linear regression
@@ -18,8 +24,9 @@ from sklearn.linear_model import Ridge, RidgeCV, Lasso, LassoCV
 from sklearn.tree import DecisionTreeRegressor
     ## metrics
 import scipy.stats as stats
-from sklearn.metrics import mean_squared_error, mean_absolute_error
-from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
+
 
 # to plot scatterplot
 def plot_scatterplot(dataset, title=str, title_fontsize=int, ax_fontsize=int,
@@ -41,7 +48,7 @@ def plot_scatterplot(dataset, title=str, title_fontsize=int, ax_fontsize=int,
         ax.set_xticklabels([int(tick) for tick in xticks], rotation=0)
         ax.grid(True, color='gray', linestyle='--')
 
-    fig.suptitle(title, y=1.0 , fontsize=title_fontsize)
+    fig.suptitle(title, y=1.0, fontsize=title_fontsize)
 
     plt.tight_layout()
     plt.show()
@@ -77,6 +84,105 @@ def calculate_skewness(dataset):
     for column in dataset.columns:
         skewness.append(round(stats.skew(dataset[column]), 3))
     return skewness
+
+
+def plot_pca_explained_variance(best_parameters, pca_n_components, X):
+    explained_variance_ratios = []
+    for n_components in pca_n_components:
+        pipeline = Pipeline([('polynomial',
+                              PolynomialFeatures(degree=best_parameters['polynomial__degree'],
+                                                 interaction_only=best_parameters['polynomial__interaction_only'])),
+                             ('scaler', best_parameters['scaler']),
+                             ('pca', PCA(n_components=n_components))])
+        pipeline.fit(X)
+        explained_variance_ratios.append(pipeline['pca'].explained_variance_ratio_)
+      
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 8))
+    ax.plot(pca_n_components, explained_variance_ratios, "+", linewidth=2)
+    ax.set_ylabel("PCA explained variance ratio")
+    
+    plt.show()
+
+
+# get grid search
+def get_grid_search_regressor(regressor, regressor_parameters_grid,
+                              poly_degrees, pca_n_components,
+                              score_functions,
+                              refit=False,
+                              random_state=42):
+    pipeline = Pipeline([('polynomial', PolynomialFeatures()),
+                         ('scaler', None),
+                         ('pca', PCA()),
+                         ('regressor', regressor)])
+    param_grid = {'polynomial__degree': poly_degrees,
+                  'polynomial__interaction_only': [True, False],
+                  'scaler': [MinMaxScaler(), StandardScaler()],
+                  'pca__n_components': pca_n_components}
+    for parameter, values in regressor_parameters_grid.items():
+        param_grid[f'regressor__{parameter}'] = values
+    
+    regressor = GridSearchCV(estimator=pipeline,
+                             param_grid=param_grid,
+                             scoring=score_functions,
+                             cv=KFold(n_splits=5, shuffle=True, random_state=random_state),
+                             refit=refit)
+    
+    return regressor
+
+
+# to get metrics (parameter, mean_test, std_test)
+def get_results(grid_search_regressor, X, y):
+    grid_search_regressor.fit(X, y)
+    results_table = pd.DataFrame(grid_search_regressor.cv_results_)
+    
+    columns = [f'param_{parameter}' for parameter in grid_search_regressor.param_grid.keys()] +\
+              [f'mean_test_{score_func}' for score_func in grid_search_regressor.scoring] +\
+              [f'std_test_{score_func}' for score_func in grid_search_regressor.scoring]
+    results_table = results_table[columns]
+    
+    return results_table
+
+
+# to get results for the best model
+def get_best_model(results_table, score_function):
+    coefficient = 1.0
+    score_function_name = score_function
+    if score_function in ['mae', 'mean_absolute_error', 'MAE']:
+        coefficient = -1.0
+        score_function_name = 'neg_mean_absolute_error'
+    if score_function in ['mse', 'mean_squared_error', 'MSE']:
+        coefficient = -1.0
+        score_function_name = 'neg_mean_squared_error'
+    
+    columns = [column_name for column_name in results_table.columns if 'param' in column_name] +\
+              [f'mean_test_{score_function_name}', f'std_test_{score_function_name}']
+    new_columns = ['_'.join(column_name.split('_')[1:])
+                   for column_name in results_table.columns if 'param' in column_name] +\
+                  [f'mean_{score_function}', f'std_{score_function}']
+    columns_rename_map = dict((old_name, new_name) for old_name, new_name in zip(columns, new_columns))
+    
+    best_parameters = results_table[columns]
+    best_parameters = best_parameters.rename(columns=columns_rename_map)
+    
+    score_function_name = 'mean_' + score_function
+    best_parameters = best_parameters.loc[[best_parameters[score_function_name].idxmax()]]
+    best_parameters[score_function_name] = best_parameters[score_function_name] * coefficient
+    best_parameters.reset_index(drop=True)
+    
+    return best_parameters
+
+
+# to combine best models in one table
+def get_best_models(results_table, score_functions):
+    best_parameters = pd.concat(get_best_model(results_table, score_function)
+                                for score_function in score_functions)
+    best_parameters = best_parameters.reset_index(drop=True)
+    
+    return best_parameters
+
+
+
+
 
 
 # to calculate metrics
