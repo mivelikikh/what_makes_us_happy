@@ -12,6 +12,10 @@ In line with this, the aim of this project is to answer the question, "What fact
 
 In this project [`2016_world_metrics.csv`](https://www.kaggle.com/code/dariasvasileva/merging-world-metrics-sets/output) (37.3 KB) dataset is used.
 
+To see the full project please refer to the notebook [`full_project.ipynb`](https://github.com/mivelikikh/what_makes_us_happy/blob/main/full_project.ipynb).
+
+To watch the video of us explaining the most important parts of the project please refer to this [link]().
+
 ## Exploratory Data Analysis
 
 We began by examining the dataset to understand its characteristics. Our dataset `world_metrics` contains information on health and life expectancy data as well as on ecological footprint, human freedom scores, and happiness scores for 137 countries in 2016. Overall, it includes 30 features, out of which one is the “country name”, another the “happiness score” (our target variable) and the remaining 28, the predictors.
@@ -46,7 +50,7 @@ Through this approach, we aimed to assess the evolution of the prediction model'
 6. Random Forest
 7. Support Vector Regression
 
-To predict, we used a set of custom functions. These functions were designed to work together in the workflow for performing grid search on a regressor, obtaining results, and extracting the best models based on different scoring functions. The code output includes both the model settings and the calculated metrics. The model settings provide information about the chosen algorithm, hyperparameters, and preprocessing steps used. The calculated metrics consist of the mean $R^2$, mean MAE, mean MSE, and standard deviations for each metric, allowing us to observe the minimum and maximum values across the five folds that was created with the use of Cross-Validation.
+To predict, we used a set of custom functions that are placed in the file [`functions.py`](https://github.com/mivelikikh/what_makes_us_happy/blob/main/functions.py). These functions were designed to work together in the workflow for performing grid search on a regressor, obtaining results, and extracting the best models based on different scoring functions. The code output includes both the model settings and the calculated metrics. The model settings provide information about the chosen algorithm, hyperparameters, and preprocessing steps used. The calculated metrics consist of the mean $R^2$, mean MAE, mean MSE, and standard deviations for each metric, allowing us to observe the minimum and maximum values across the five folds that was created with the use of Cross-Validation.
 
 ## Results
 
@@ -54,7 +58,6 @@ This table compares all the models in terms of the obtained **mean MSE**. We use
 
 - F = Full Sample Approach
 - S = Subset Sample Approach
-
 
 |sample|model name|mean MSE|std||sample|model name|mean MSE|std|
 |---|---|---|---|---|---|---|---|---|
