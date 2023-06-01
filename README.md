@@ -50,10 +50,29 @@ To predict, we used a set of custom functions. These functions were designed to 
 
 ## Results
 
-After running all the models, we have discovered that different models excel in different evaluation metrics. Additionally, as we expected, the models work better on the data subset rather than the whole dataset. We obtained the following results:
+This table compares all the models in terms of the obtained **mean MSE**. We use the following abreviations for compactness of the table:
 
-1. When considering the lowest MAE as the primary comparison indicator, the **Support Vector Regression** model emerges as the top performer. It achieves the smallest average absolute difference between the predicted and actual values (0.41 $\pm$ 0.01), indicating better accuracy in predictions.
-2. Lastly, the **Support Vector Regression model** delivers the lowest MSE (0.28 $\pm$ 0.04) among all the models. This indicates that it exhibits the smallest average squared difference between the predicted and actual values, highlighting its precision in capturing the underlying patterns in the data.
+- F = Full Sample Approach
+- S = Subset Sample Approach
+
+
+|sample|model name|mean MSE|std||sample|model name|mean MSE|std|
+|---|---|---|---|---|---|---|---|---|
+|F|SVR|0.3355|0.0841||S|SVR|<span style="color: darkgreen;">0.2842</span>|<span style="color: darkgreen;">0.0424</span>|
+|F|Random Forest|0.3465|0.0761||S|Random Forest|<span style="color: darkgreen;">0.2961</span>|<span style="color: darkred;">0.0831</span>|
+|F|Ridge|0.3512|0.0804||S|Ridge|<span style="color: darkgreen;">0.3499</span>|<span style="color: darkgreen;">0.0565</span>|
+|F|ElasticNet|0.3519|0.0806||S|ElasticNet|<span style="color: darkgreen;">0.3510</span>|<span style="color: darkgreen;">0.0576</span>|
+|F|Lasso|0.3577|0.0945||S|Lasso|<span style="color: darkgreen;">0.3561</span>|<span style="color: darkgreen;">0.0522</span>|
+|F|kNN|0.3619|0.1106||S|kNN|<span style="color: darkgreen;">0.3073</span>|<span style="color: darkgreen;">0.0727</span>|
+|F|Decision Tree|0.5657|0.1843||S|Decision Tree|<span style="color: darkgreen;">0.4734</span>|<span style="color: darkgreen;">0.1301</span>|
+
+Especially, we found the following:
+
+**Full Sample Approach.** Among the regression models, SVR (Support Vector Regression) has the lowest mean MSE of 0.3355, followed closely by Random Forest, and Ridge. ElasticNet, Lasso and kNN have slightly higher mean MSE values, and Decision Tree performs the worst with a mean MSE of 0.5657.
+
+**Subset Approach**. SVR still has the lowest mean MSE of 0.2842, followed by Random Forest and kNN. Ridge, ElasticNet, and Lasso perform similarly, while Decision Tree has the highest mean MSE of 0.4734.
+
+Overall, SVR consistently performs well on both the Full and Subset datasets, achieving the lowest mean MSE in both cases. This indicates that SVR is the most accurate model in predicting happiness scores based on the given features. It demonstrates good generalization ability and robustness across different dataset sizes.
 
 ## Limitations and further research
 
