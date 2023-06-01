@@ -28,6 +28,28 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 
 
+# to plot histogram
+def plot_histogram(data, num_bins=10, title='', xlabel='', ylabel=''):
+    """
+    Plot a histogram of the given data.
+
+    Parameters:
+    - data: List or Numpy array containing the data points.
+    - num_bins: Number of bins to use in the histogram (default: 10).
+    - title: Title of the histogram (default: '').
+    - xlabel: Label for the x-axis (default: '').
+    - ylabel: Label for the y-axis (default: '').
+
+    Returns:
+    - None (the histogram plot will be displayed).
+    """
+    plt.hist(data, bins=num_bins)
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.show()
+    
+
 # to plot scatterplot
 def plot_scatterplot(dataset, title=str, title_fontsize=int, ax_fontsize=int,
                      fig_width=int, fig_height=int,
