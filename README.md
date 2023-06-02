@@ -14,7 +14,7 @@ In this project [`2016_world_metrics.csv`](https://www.kaggle.com/code/dariasvas
 
 To see the full project please refer to the notebook [`full_project.ipynb`](https://github.com/mivelikikh/what_makes_us_happy/blob/main/full_project.ipynb).
 
-To watch the video of us explaining the most important parts of the project please refer to this [link]().
+To watch the video of us explaining the most important parts of the project please refer to this [link](https://youtu.be/DU891iL73Bo).
 
 ## Exploratory Data Analysis
 
